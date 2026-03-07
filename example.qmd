@@ -1,41 +1,160 @@
 ---
-title: "editable Example"
+title: "quarto-revealjs-freestyle "
+subtitle: "<hr> *An advanced fork of quarto-revealjs-editable* : <br> Drag, resize and reposition (almost) anything on your slides !"
+author: "Eric Bavu"
 format:
-  revealjs: default
+  revealjs:
+    theme: default
+    width: 1920
+    height: 1080
+    center: true
+    code-copy: false
 revealjs-plugins:
   - editable
 filters:
   - editable
+execute:
+  echo: false
 ---
 
-## In the morning
+# Plain text div
 
-![](image.png){.editable}
+::: {.absolute width=310.749px height=369.537px left=1169.88px top=-111.852px}
+<ul>
 
-## Text
+<li>Drag us anywhere on the slide.</li>
 
-::: {.editable}
-Lorem ipsum dolor sit amet, `lm(mpg ~ disp, mtcars)` consectetur adipiscing elit. Praesent sed diam rutrum, porta nulla vitae, elementum lacus.
+<li>Resize us with the handles.</li>
 
-**Donec** et congue sapien. *Praesent* quis dui nulla. ***Donec*** convallis, risus a sodales ~~luctus~~, diam eros dapibus ante, ac pharetra nulla odio at lorem.
+<li>Use **A+** / **A-** to change font size,</li>
+
+<li>and **✎** to edit the text directly.</li>
+
+</ul>
 :::
 
-## More text
+# Markdown content
 
-::: editable
-Lorem ipsum dolor sit amet, `lm(mpg ~ disp, mtcars)` consectetur adipiscing elit. Praesent sed diam rutrum, porta nulla vitae, elementum lacus.
 
-**Donec** et congue sapien. *Praesent* quis dui nulla. ***Donec*** convallis, risus a sodales ~~luctus~~, diam eros dapibus ante, ac pharetra nulla odio at lorem.
+Citation blocks : 
+
+::: {.absolute width=1536px height=NaNpx left=245.291px top=337.876px}
+<blockquote>
+
+“The best way to predict the future is to invent it.”
+
+— Alan Kay
+
+</blockquote>
 :::
 
-## Tests - backslashes are preserved
+# Callout blocks
 
-Explicit spaces\ \ 
 
-```r
-"\\d"
-```
+::: {.callout-tip}
+# Tip
+Freestyle does not handle very well with Quarto callout blocks at the moment when saving your modifications. Avoid using *freestyled* callouts or make a PR if you find a solution ! 
+:::
 
-```r
-rename_all(\(x))
-```
+
+# LaTeX equations
+
+
+Fixed position equation : $TF[s(f)] = \hat{S}(f)$ 
+
+
+::: {.absolute width=1536px height=NaNpx left=-16.8337px top=256.112px}
+
+Movable : 
+$$
+\hat{S}(f) = \int_{-\infty}^{+\infty} s(t)\, e^{-2\pi i f t}\, dt
+$$
+:::
+
+
+# Image
+
+:::: {.columns}
+::: {.column width="30%"}
+::: {.callout-note}
+## Tip
+Hold **Shift** while resizing to preserve the aspect ratio ! 
+
+But since it's **freestyle**, you can do whatever you want 
+:::
+:::
+::: {.column width="70%"}
+![](https://upload.wikimedia.org/wikipedia/commons/f/ff/AresV_Ascent.jpg){.absolute width=329.741px height=185.373px left=88.9479px top=472.685px}
+:::
+::::
+
+
+# Video embed
+
+::: {.absolute width=793.14px height=463.571px left=1223.08px top=-273.956px}
+{{< video https://www.youtube.com/watch?v=U5qgzAmGwtI width="800" height="450" >}}
+:::
+
+
+# It even works with executable code
+
+>
+> ### Yum, resizable plotly interactive plots !
+> - not shown here since I can't be sure you have `Plotly` or `matplotlib` installed, but if you have, juste add braces around `python` in the following code-cell ! 
+
+::: {.absolute width=1536px height=NaNpx left=257.315px top=100.96px}
+
+```python
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+# see https://en.wikipedia.org/wiki/Dupin_cyclide
+import numpy as np
+a, b, d = 1.32, 1., 0.8
+c = a**2 - b**2
+u, v = np.mgrid[0:2*np.pi:100j, 0:2*np.pi:100j]
+x = (d * (c - a * np.cos(u) * np.cos(v)) + b**2 * np.cos(u)) / (a - c * np.cos(u) * np.cos(v))
+y = b * np.sin(u) * (a - d*np.cos(v)) / (a - c * np.cos(u) * np.cos(v))
+z = b * np.sin(v) * (c*np.cos(u) - d) / (a - c * np.cos(u) * np.cos(v))
+
+fig = go.Figure()
+fig.add_trace(go.Surface(x=x, y=y, z=z, surfacecolor=x**2 + y**2 + z**2))
+fig.update_layout(title_text="Ring cyclide", plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', height=400)
+fig.show(config={
+    'displaylogo': False,
+    'modeBarButtonsToRemove': ['toImage', 'zoomIn', 'zoomOut']
+    })
+``` 
+:::
+
+# Freestyle is in the air 
+
+
+::: {.callout-warning}
+## Did you notice the floating bar at bottom ? 
+
+- It is hidden if you did not move anything or if you already exported your modifications
+- Whenever you want, just click on **save edits** or **copy to clipboard**
+- The saved qmd holds the absolute positions, sizes, attributes of your elements !
+- Even better, just tap copy to clipboard, paste it in your text editor on top of the current qmd, and validate your freestyle modifications ! 
+:::
+
+:::: {.columns}
+::: {.column width="20%"}
+
+:::
+
+::: {.column width="60%"}
+
+![](https://img.ccnull.de/1100000/preview/1101829_8649dc8b97dc7018480a909e775407ae.jpg)
+
+:::
+
+
+::: {.column width="20%"}
+
+:::
+::::
+
+# Enjoy ! 
+
+
