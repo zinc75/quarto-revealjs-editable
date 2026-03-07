@@ -1,11 +1,24 @@
-# editable Extension For Quarto Revealjs
+# quarto-revealjs-freestyle
 
-This Revealjs plugin allows the repositioning and resizing of images and text divs directly in the previewed slides.
+An advanced fork of [quarto-revealjs-editable](https://github.com/EmilHvitfeldt/quarto-revealjs-editable) by Emil Hvitfeldt.
+
+**Freestyle** lets you drag, resize and reposition (almost) anything on your Reveal.js slides — text divs, images, equations, blockquotes, callouts, and even interactive Plotly figures.
+
+## What's new compared to editable
+
+- **Robust initialization** — works reliably on browser reload (fixes blank elements on refresh)
+- **Animated glow indicator** — editable elements pulse softly at rest so you always know what's draggable; glow intensifies on hover
+- **Floating toolbar** — a non-intrusive bar slides in from the bottom whenever you make a change, with **Copy to clipboard** and **Save edits** buttons and visual feedback
+- **Correct initial sizing** — text divs start at 80% slide width with `height: auto`; images respect their natural aspect ratio
+- **Correct initial positioning** — elements are anchored at their natural rendered position, not at the slide center
+- **UTF-8 support** — accented characters and special symbols are preserved when saving
+- **Shortcode support** — `{{< meta ... >}}` and other Quarto shortcodes are now preserved correctly on save (fixes [editable#15](https://github.com/EmilHvitfeldt/quarto-revealjs-editable/issues/15))
+- **Backslash support** — backslashes in equations and code are no longer corrupted on save (fixes [editable#16](https://github.com/EmilHvitfeldt/quarto-revealjs-editable/issues/16))
 
 ## Installing
 
 ```bash
-quarto add emilhvitfeldt/quarto-revealjs-editable
+quarto add zinc75/quarto-revealjs-freestyle
 ```
 
 This will install the extension under the `_extensions` subdirectory.
@@ -13,7 +26,7 @@ If you're using version control, you will want to check in this directory.
 
 ## Using
 
-Designate the extension as a `revealjs-plugins` in the yaml file like so:
+Declare the extension in your YAML front matter:
 
 ```yaml
 revealjs-plugins:
@@ -22,40 +35,34 @@ filters:
   - editable
 ```
 
-To designate that you want to move and resize an image or a div, add the `editable` id to the image like so.
+Mark any element as draggable with the `.editable` class:
 
 ```markdown
 ![](image.png){.editable}
 ```
 
-or like so for text.
-
 ```markdown
 ::: {.editable}
-some text here
-:::
-
-or
-
-::: editable
-some text here
+Some text, an equation, a blockquote, a callout...
 :::
 ```
 
-Note that this extension will completely rewrite the `{}`.
+Once you have repositioned and resized your elements, use the floating toolbar at the bottom of the slide to **Copy to clipboard** or **Save edits**. Paste the clipboard content into your `.qmd` (or replace it with the saved file) and re-render — your elements will be locked in place.
 
-Once you have rerendered the slides, each image with the id should be movable and resizable using the corners.
-Holding shift while pulling the corners respects aspect ratios.
+> [!NOTE]
+> Holding **Shift** while resizing an image preserves its aspect ratio.
 
-Once you are happy with the sizes, open the menu (M), go to tools, and click "Save Edits". This will prompt you to save a file. Choose the same folder you are working in to overwrite the document you are in. Rerender, and the elements should be locked in place.
+> [!NOTE]
+> The filter injects the `.qmd` source into the rendered HTML (base64-encoded) so the save/copy feature can rewrite absolute positions. Remove `editable` from `filters` before making your document public if you don't want the source embedded.
 
-Note that this extension adds the file name of the slides qmd file to the document itself, if you don't want that you happen, remove `editable` from `filters` before making the document public. And rerender the document.
+> [!WARNING]
+> Images with a `width` expressed as a percentage (e.g. `{.editable width=10%}`) are not supported — use `width=Npx` instead or leave width unspecified.
 
-> [!WARNING]  
-> This extension does NOT work with [shortcodes](https://quarto.org/docs/authoring/shortcodes.html). See [issue #15](https://github.com/EmilHvitfeldt/quarto-revealjs-editable/issues/15) for progress.
+> [!WARNING]
+> Images with a `<figcaption>` (Quarto markdown caption syntax) are not fully supported — the caption does not follow the image when dragged. Use images without captions for best results.
 
 > [!TIP]
-> sometimes you might find that images don't stay the size that you dragged them to be. this is because the default is to set `max-width` and `max-height` to `95%`. We can undo that by adding the following to out scss file.
+> If images don't stay the size you dragged them to, add the following to your SCSS theme:
 > ```scss
 > .reveal img {
 >   max-width: unset;
@@ -63,11 +70,10 @@ Note that this extension adds the file name of the slides qmd file to the docume
 > }
 > ```
 
-## Demo Video
-
-![](demo-text.gif)
-
 ## Example
 
-Here is the source code for a minimal example: [example.qmd](example.qmd).
+See [example.qmd](example.qmd) for a minimal working example covering text, equations, images, video embeds, and more.
 
+## Credits
+
+Based on [quarto-revealjs-editable](https://github.com/EmilHvitfeldt/quarto-revealjs-editable) by [Emil Hvitfeldt](https://github.com/EmilHvitfeldt). Many thanks to Emil for the original idea and implementation.
