@@ -123,13 +123,27 @@ window.Revealeditable = function () {
   return {
     id: "Revealeditable",
     init: function (deck) {
-      document.addEventListener("DOMContentLoaded", function () {
+      function doInit() {
         const editableElements = getEditableElements();
-
         editableElements.forEach(setupDraggableElt);
-
         addSaveMenuButton();
-      });
+      }
+
+      // Use Reveal 'ready' event — fires reliably after DOM is prepared,
+      // including on browser reload where DOMContentLoaded may already be past.
+      if (deck && typeof deck.on === "function") {
+        if (deck.isReady()) {
+          doInit();
+        } else {
+          deck.on("ready", doInit);
+        }
+      } else {
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", doInit);
+        } else {
+          doInit();
+        }
+      }
     },
   };
 };
@@ -212,22 +226,95 @@ function setupDraggableElt(elt) {
   );
   attachEventListeners();
 
+  // Inject glow keyframes once
+  if (!document.getElementById('editable-glow-style')) {
+    const glowStyle = document.createElement('style');
+    glowStyle.id = 'editable-glow-style';
+    glowStyle.textContent = `
+      @keyframes editable-glow-pulse {
+        0%, 100% { box-shadow: 0 0 6px 2px rgba(0, 124, 186, 0.15); }
+        50%       { box-shadow: 0 0 14px 4px rgba(0, 124, 186, 0.32); }
+      }
+    `;
+    document.head.appendChild(glowStyle);
+  }
+
   function createEltContainer(elt) {
     const container = document.createElement("div");
     container.style.position = "absolute";
     container.style.display = "inline-block";
     container.style.border = "2px solid transparent";
+    container.style.borderRadius = "3px";
+    container.style.animation = "editable-glow-pulse 3s ease-in-out infinite";
+    container.style.transition = "box-shadow 0.25s ease";
+    container.style.zIndex = "10";
+
+    // Compute natural position before inserting container.
+    // Temporarily neutralize width/style so centering doesn't skew the measurement.
+    const savedWidth     = elt.style.width;
+    const savedAttrWidth = elt.getAttribute('width');
+    elt.style.width = "auto";
+    if (savedAttrWidth) elt.removeAttribute('width');
+
+    const slideEl   = elt.closest(".reveal .slides section") || elt.closest(".slides") || elt.parentNode;
+    const slideRect = slideEl.getBoundingClientRect();
+    const eltRect   = elt.getBoundingClientRect();
+    const initLeft  = eltRect.left - slideRect.left;
+    const initTop   = eltRect.top  - slideRect.top;
+
+    // Restore
+    elt.style.width = savedWidth;
+    if (savedAttrWidth) elt.setAttribute('width', savedAttrWidth);
+
     elt.parentNode.insertBefore(container, elt);
     container.appendChild(elt);
+
+    container.style.left = initLeft + "px";
+    container.style.top  = initTop  + "px";
+
     return container;
   }
 
   function setupEltStyles(elt) {
     elt.style.cursor = "move";
     elt.style.position = "relative";
-    elt.style.width = (elt.naturalWidth || elt.offsetWidth) / 2 + "px";
-    elt.style.height = (elt.naturalHeight || elt.offsetHeight) / 2 + "px";
     elt.style.display = "block";
+
+    const isImg = elt.tagName.toLowerCase() === "img";
+    const slideWidth = (document.querySelector(".reveal .slides") || document.body).offsetWidth || 1920;
+
+    function applySize() {
+      if (isImg) {
+        const attrWidth = elt.getAttribute('width');
+        if (attrWidth && attrWidth.includes('%')) {
+          // Convert % to px relative to slide width
+          const pct = parseFloat(attrWidth) / 100;
+          elt.style.width  = (slideWidth * pct) + "px";
+          elt.style.height = "auto";
+        } else if (attrWidth) {
+          elt.style.width  = attrWidth + "px";
+          elt.style.height = "auto";
+        } else {
+          const measuredW = elt.naturalWidth || elt.offsetWidth;
+          const defaultW  = slideWidth * 0.40;
+          const w = (measuredW > 100) ? measuredW / 2 : defaultW;
+          elt.style.width  = w + "px";
+          elt.style.height = "auto";
+        }
+      } else {
+        // For divs, always use default width — offsetWidth is unreliable
+        // for inline content (shortcodes, spans) and varies with layout timing.
+        elt.style.width  = slideWidth * 0.80 + "px";
+        elt.style.height = "auto";
+      }
+    }
+
+    if (isImg && !elt.complete) {
+      elt.addEventListener("load", applySize, { once: true });
+    } else {
+      // defer one frame so layout is settled
+      requestAnimationFrame(applySize);
+    }
   }
 
   function createResizeHandles(container) {
@@ -335,7 +422,9 @@ function setupDraggableElt(elt) {
 
   function setupHoverEffects(container, isDraggingFn, isResizingFn) {
     container.addEventListener("mouseenter", () => {
+      container.style.animation = "none";
       container.style.border = "2px solid #007cba";
+      container.style.boxShadow = "0 0 18px 5px rgba(0, 124, 186, 0.55)";
       container
         .querySelectorAll(".resize-handle")
         .forEach((h) => (h.style.opacity = "1"));
@@ -346,6 +435,8 @@ function setupDraggableElt(elt) {
     container.addEventListener("mouseleave", () => {
       if (!isDraggingFn() && !isResizingFn()) {
         container.style.border = "2px solid transparent";
+        container.style.boxShadow = "";
+        container.style.animation = "editable-glow-pulse 3s ease-in-out infinite";
         container
           .querySelectorAll(".resize-handle")
           .forEach((h) => (h.style.opacity = "0"));
@@ -508,6 +599,8 @@ function setupDraggableElt(elt) {
       setTimeout(() => {
         if (!container.matches(":hover")) {
           container.style.border = "2px solid transparent";
+          container.style.boxShadow = "";
+          container.style.animation = "editable-glow-pulse 3s ease-in-out infinite";
           container
             .querySelectorAll(".resize-handle")
             .forEach((h) => (h.style.opacity = "0"));
