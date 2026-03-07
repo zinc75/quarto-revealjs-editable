@@ -96,6 +96,7 @@ Contributions are very welcome! I maintain this extension alongside an intense p
 If you find a bug or want to add a feature, feel free to open an issue or submit a pull request. A few known areas where help would be appreciated:
 
 - **Initial positioning** — elements don't always anchor at their natural rendered position; a robust fix would be great
+- **Callout blocks** - they are well target for moving / resizing, but they are somehow duplicated when rendering back the `.qmd` file. This is not the case with blockquotes, and I still don't figure why (any Pandoc expert ?)
 - **Figure captions** — making the `<figcaption>` follow the image when dragged
 - **Percentage widths** — supporting `width=X%` on images relative to the slide
 
