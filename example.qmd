@@ -19,7 +19,7 @@ execute:
 
 # Plain text div
 
-::: {.absolute width=310.749px height=369.537px left=1169.88px top=-111.852px}
+::: {.editable}
 <ul>
 
 <li>Drag us anywhere on the slide.</li>
@@ -38,7 +38,7 @@ execute:
 
 Citation blocks : 
 
-::: {.absolute width=1536px height=NaNpx left=245.291px top=337.876px}
+::: {.editable}
 <blockquote>
 
 “The best way to predict the future is to invent it.”
@@ -63,7 +63,7 @@ Freestyle does not handle very well with Quarto callout blocks at the moment whe
 Fixed position equation : $TF[s(f)] = \hat{S}(f)$ 
 
 
-::: {.absolute width=1536px height=NaNpx left=-16.8337px top=256.112px}
+::: {.editable}
 
 Movable : 
 $$
@@ -84,14 +84,14 @@ But since it's **freestyle**, you can do whatever you want
 :::
 :::
 ::: {.column width="70%"}
-![](https://upload.wikimedia.org/wikipedia/commons/f/ff/AresV_Ascent.jpg){.absolute width=329.741px height=185.373px left=88.9479px top=472.685px}
+![](https://upload.wikimedia.org/wikipedia/commons/f/ff/AresV_Ascent.jpg){.editable}
 :::
 ::::
 
 
 # Video embed
 
-::: {.absolute width=793.14px height=463.571px left=1223.08px top=-273.956px}
+::: {.editable}
 {{< video https://www.youtube.com/watch?v=U5qgzAmGwtI width="800" height="450" >}}
 :::
 
@@ -102,7 +102,7 @@ But since it's **freestyle**, you can do whatever you want
 > ### Yum, resizable plotly interactive plots !
 > - not shown here since I can't be sure you have `Plotly` or `matplotlib` installed, but if you have, juste add braces around `python` in the following code-cell ! 
 
-::: {.absolute width=1536px height=NaNpx left=257.315px top=100.96px}
+::: {.editable}
 
 ```python
 import plotly.graph_objects as go
